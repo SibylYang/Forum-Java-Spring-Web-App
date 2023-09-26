@@ -1,0 +1,74 @@
+version: '3.8'
+services:
+  # Spring Boot Application
+  spring-app:
+    image: ssyyy/2handapp:0.0.1
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/community
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: qljlyrh@Yty
+      SPRING_REDIS_HOST: redis
+    depends_on:
+      - mysql
+      - redis
+      - zookeeper
+      - kafka
+    networks:
+      - my-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3307:3306"  # Map MySQL port to host
+    environment:
+      MYSQL_ROOT_PASSWORD: qljlyrh@Yty
+      MYSQL_DATABASE: community
+    networks:
+      - my-network
+    volumes:
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+  # Redis
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    networks:
+      - my-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - my-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    ports:
+      # To learn about configuring Kafka for access across networks see
+      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    name: my-network
