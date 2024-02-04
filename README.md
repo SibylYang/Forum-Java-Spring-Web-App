@@ -1,5 +1,5 @@
-# SecondHand-Java-Spring-Web-App
-This project builds a website to sell second-hand items, allowing securely log in, create posts, make comments, send direct messages, follow other users, and receive notificationsis. The website is built using Java Spring Boot. 
+# Java-Spring-Web-App
+This project builds a forum website for job hunters, allowing securely log in, create posts, make comments, send direct messages, follow other users, and receive notificationsis. The website is built using Java Spring Boot. 
 ## Features
 
 #### Web Basics
